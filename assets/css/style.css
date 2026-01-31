@@ -13,6 +13,15 @@
   --motion-accent: 255, 165, 0;      /* Orange */
 }
 
+/* ===== FIX: anchor links hidden under sticky navbar ===== */
+html{
+  scroll-padding-top: 50px; /* match your nav height */
+}
+
+section[id]{
+  scroll-margin-top: 50px;  /* ensures section headings remain visible */
+}
+
 *{ box-sizing:border-box; }
 html{ scroll-behavior:smooth; }
 

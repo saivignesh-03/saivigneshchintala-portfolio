@@ -7,35 +7,35 @@ const projects = [
     title: "NYC Taxi Demand Forecasting & Analytics Pipeline",
     desc: "Processed 10M+ trips, engineered 30+ features, improved forecast accuracy by 12%, built Power BI + Streamlit dashboards, automated refresh with AWS Glue + Lambda.",
     tech: ["Python", "SQL", "PostgreSQL", "Power BI", "Streamlit", "AWS Glue", "AWS Lambda"],
-    link: "https://github.com/",
+    link: "https://github.com/saivignesh-03",
     image: "assets/img/projects/nyc-taxi.jpg"
   },
   {
     title: "Citi Bike Demand Forecasting (Time Series Analysis)",
     desc: "Built SARIMA/Prophet models on 1M+ rides, identified seasonality with ~85% accuracy, proposed rebalancing strategy projected to cut costs by 15%.",
     tech: ["Python", "Time Series", "SARIMA", "Prophet"],
-    link: "https://github.com/",
+    link: "https://github.com/saivignesh-03",
     image: "assets/img/projects/citibike.png"
   },
   {
     title: "Insurance Renewal Prediction System",
     desc: "Trained Logistic Regression + XGBoost on 50K+ records, tracked 20+ experiments with MLflow/DagsHub improving precision/recall by ~10%.",
     tech: ["Python", "XGBoost", "MLflow"],
-    link: "https://github.com/",
+    link: "https://github.com/saivignesh-03",
     image: "assets/img/projects/insurance.jpg"
   },
   {
     title: "Bitcoin Price Prediction & Trading Analytics",
     desc: "Modeled crypto volatility, validated across rolling windows, simulated risk-aware strategies improving Sharpe Ratio vs buy-and-hold.",
     tech: ["Python", "Time Series", "Finance"],
-    link: "https://github.com/",
+    link: "https://github.com/saivignesh-03",
     image: "assets/img/projects/bitcoin.png"
   },
   {
     title: "Healthcare Analytics Database System",
     desc: "Designed normalized PostgreSQL schemas and built Python ETL pipelines populating 10+ analytical tables for reporting.",
     tech: ["PostgreSQL", "Data Modeling", "ETL", "Python"],
-    link: "https://github.com/",
+    link: "https://github.com/saivignesh-03",
     image: "assets/img/projects/healthcare.webp"
   }
 ];
