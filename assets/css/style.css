@@ -6,14 +6,20 @@
   --muted:#a1a1aa;
   --btn:#ffffff;
   --btnText:#09090b;
+
+  /* Green, White, and Orange Theme (motion) */
+  --motion-primary: 0, 153, 0;       /* Green */
+  --motion-secondary: 255, 255, 255; /* White */
+  --motion-accent: 255, 165, 0;      /* Orange */
 }
 
 *{ box-sizing:border-box; }
 html{ scroll-behavior:smooth; }
+
 body{
   margin:0;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-  background: var(--bg);
+  background: transparent; /* global motion bg will show */
   color: var(--text);
 }
 
@@ -99,7 +105,10 @@ body{
 /* HERO */
 .hero{
   padding: 48px 0 24px;
+  position: relative;
+  overflow: visible; /* avoid weird clipping */
 }
+
 .tag{
   color: var(--muted);
   font-size: 13px;
@@ -133,7 +142,7 @@ h1{
 
 .hero-card{
   margin-top: 22px;
-  border: 1px solid var(--border);
+  border: none;
   background: var(--card);
   border-radius: 22px;
   padding: 18px;
@@ -286,9 +295,8 @@ h2{
   margin: 0;
   font-size: 34px;
 }
-/* ===== HERO GRID + PROFILE ===== */
-.hero{ position: relative; overflow: hidden; }
 
+/* ===== HERO GRID + PROFILE ===== */
 .hero-grid{
   position: relative;
   display: grid;
@@ -316,6 +324,7 @@ h2{
   border-radius: 18px;
   object-fit: cover;
   border: 1px solid var(--border);
+  display:block;
 }
 
 .profile-meta{ margin-top: 12px; }
@@ -331,64 +340,7 @@ h2{
   line-height: 1.4;
 }
 
-/* ===== PROJECT IMAGE CARD ===== */
-.project-img{
-  width: 100%;
-  height: 170px;
-  object-fit: cover;
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  background: rgba(255,255,255,0.03);
-}
-
-@media (min-width: 800px){
-  .project-img{ height: 180px; }
-}
-
-/* ===== MOTION BACKGROUND (no libs) ===== */
-.bg-motion{
-  position: absolute;
-  inset: -80px;
-  pointer-events: none;
-  opacity: 0.65;
-  filter: blur(26px);
-}
-
-.blob{
-  position: absolute;
-  width: 320px;
-  height: 320px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.16), rgba(255,255,255,0));
-  animation: floaty 10s ease-in-out infinite;
-}
-
-.b1{ top: 40px; left: -60px; animation-duration: 12s; }
-.b2{ top: 140px; right: -80px; animation-duration: 14s; }
-.b3{ bottom: -120px; left: 40%; animation-duration: 16s; }
-
-@keyframes floaty{
-  0%   { transform: translate3d(0,0,0) scale(1); }
-  50%  { transform: translate3d(40px,-30px,0) scale(1.06); }
-  100% { transform: translate3d(0,0,0) scale(1); }
-}
-
-/* Respect user motion preferences */
-@media (prefers-reduced-motion: reduce){
-  .blob{ animation: none; }
-}
-.project-img{
-  width: 100%;
-  height: 170px;
-  object-fit: cover;
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  background: rgba(255,255,255,0.03);
-}
-
-@media (min-width: 800px){
-  .project-img{ height: 180px; }
-}
+/* ===== PROJECT THUMB ===== */
 .thumb{
   width: 100%;
   height: 170px;
@@ -398,7 +350,7 @@ h2{
   background: rgba(255,255,255,0.03);
 }
 
-.project-img{
+.thumb img{
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -416,71 +368,100 @@ h2{
     radial-gradient(circle at 80% 30%, rgba(255,255,255,0.10), transparent 45%),
     linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
 }
+
 /* =========================
-   GLOBAL MOTION BACKGROUND
+   PRO MOVING BACKGROUND
    ========================= */
 
+/* big canvas behind everything */
 .motion-bg{
   position: fixed;
-  inset: 0;
-  z-index: -1;
+  top: -35vh;
+  left: -35vw;
+  width: 170vw;
+  height: 170vh;
+  z-index: -10;
   pointer-events: none;
   overflow: hidden;
-  background: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.06), transparent 40%),
-              radial-gradient(circle at 80% 30%, rgba(255,255,255,0.05), transparent 45%),
-              radial-gradient(circle at 40% 90%, rgba(255,255,255,0.04), transparent 50%),
-              #09090b;
+  background: #09090b;
 }
 
-/* Aurora layer */
-.aurora{
-  position: absolute;
-  inset: -40%;
+/* drifting gradient layer */
+.motion-bg::before{
+  content:"";
+  position:absolute;
+  inset:-40%;
   background:
-    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.10), transparent 40%),
-    radial-gradient(circle at 80% 30%, rgba(255,255,255,0.08), transparent 45%),
-    radial-gradient(circle at 50% 80%, rgba(255,255,255,0.06), transparent 45%);
-  filter: blur(40px);
-  opacity: 0.55;
-  animation: auroraMove 14s ease-in-out infinite;
+    radial-gradient(900px 700px at 15% 20%, rgba(var(--motion-primary), 0.14), transparent 65%),
+    radial-gradient(900px 700px at 85% 25%, rgba(var(--motion-secondary), 0.12), transparent 65%),
+    radial-gradient(900px 700px at 50% 85%, rgba(var(--motion-accent), 0.10), transparent 70%);
+  filter: blur(50px);
+  opacity: 0.9;
+  animation: drift 18s ease-in-out infinite;
 }
 
-@keyframes auroraMove{
-  0%   { transform: translate3d(0,0,0) scale(1); }
-  50%  { transform: translate3d(60px,-40px,0) scale(1.05); }
-  100% { transform: translate3d(0,0,0) scale(1); }
+/* aurora sweep */
+.aurora{
+  position:absolute;
+  inset:-50%;
+  background: linear-gradient(
+    120deg,
+    rgba(var(--motion-primary), 0.18),
+    rgba(var(--motion-secondary), 0.10),
+    rgba(var(--motion-accent), 0.14)
+  );
+  filter: blur(70px);
+  opacity: 0.35;
+  animation: sweep 14s linear infinite;
 }
 
-/* Blobs */
+/* blobs */
 .blob{
-  position: absolute;
-  width: 420px;
-  height: 420px;
+  position:absolute;
+  width: 620px;
+  height: 620px;
   border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.14), rgba(255,255,255,0));
-  filter: blur(18px);
-  opacity: 0.55;
-  animation: blobFloat 16s ease-in-out infinite;
+  background: radial-gradient(
+    circle,
+    rgba(var(--motion-secondary),0.20),
+    rgba(var(--motion-primary),0.10),
+    transparent 70%
+  );
+  filter: blur(45px);
+  opacity: 0.35;
+  animation: float 22s ease-in-out infinite;
 }
 
-.b1{ top: -120px; left: -140px; animation-duration: 18s; }
-.b2{ top: 20%; right: -180px; animation-duration: 22s; }
-.b3{ bottom: -180px; left: 35%; animation-duration: 26s; }
+.b1{ top:-260px; left:-260px; animation-duration: 24s; }
+.b2{ top:20%; right:-320px; animation-duration: 28s; }
+.b3{ bottom:-320px; left:30%; animation-duration: 32s; }
 
-@keyframes blobFloat{
+/* film grain */
+.grain{
+  position:absolute;
+  inset:-20%;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+  opacity:0.06;
+  mix-blend-mode: overlay;
+  animation: grainMove 7s steps(6) infinite;
+}
+
+@keyframes drift{
   0%   { transform: translate3d(0,0,0) scale(1); }
-  50%  { transform: translate3d(70px,-50px,0) scale(1.08); }
+  50%  { transform: translate3d(80px,-60px,0) scale(1.06); }
   100% { transform: translate3d(0,0,0) scale(1); }
 }
 
-/* Film grain (gives premium motion texture) */
-.grain{
-  position: absolute;
-  inset: -20%;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
-  opacity: 0.06;
-  mix-blend-mode: overlay;
-  animation: grainMove 8s steps(6) infinite;
+@keyframes sweep{
+  0%   { transform: translateX(-12%) translateY(0); }
+  50%  { transform: translateX(12%) translateY(-6%); }
+  100% { transform: translateX(-12%) translateY(0); }
+}
+
+@keyframes float{
+  0%   { transform: translate3d(0,0,0) scale(1); }
+  50%  { transform: translate3d(110px,-80px,0) scale(1.08); }
+  100% { transform: translate3d(0,0,0) scale(1); }
 }
 
 @keyframes grainMove{
@@ -492,29 +473,8 @@ h2{
   100% { transform: translate3d(0,0,0); }
 }
 
-/* Respect reduced motion */
+/* reduced motion */
 @media (prefers-reduced-motion: reduce){
-  .aurora, .blob, .grain{ animation: none !important; }
-}
-/* ===== FIX PROFILE SECTION CUT ===== */
-
-/* Remove any hero-specific fade/overlay */
-.hero::before,
-.hero::after{
-  display: none !important;
+  .motion-bg::before, .aurora, .blob, .grain{ animation:none !important; }
 }
 
-/* Ensure hero blends with page */
-.hero{
-  background: transparent !important;
-}
-/* Make profile card fully opaque and consistent */
-.profile-card{
-  background: rgba(255,255,255,0.06);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.14);
-}
-.hero,
-.hero-grid{
-  overflow: visible !important;
-}
