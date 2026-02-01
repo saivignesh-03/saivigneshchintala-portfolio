@@ -23,13 +23,17 @@ section[id]{
 }
 
 *{ box-sizing:border-box; }
-html{ scroll-behavior:smooth; }
+html{ scroll-behavior:smooth; overflow-x: hidden;   /* ADD THIS */}
+  
+
 
 body{
   margin:0;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
   background: transparent; /* global motion bg will show */
   color: var(--text);
+    overflow-x: hidden;   /* ADD THIS */
+
 }
 
 .container{
@@ -487,3 +491,140 @@ h2{
   .motion-bg::before, .aurora, .blob, .grain{ animation:none !important; }
 }
 
+/* =========================
+   SCROLL REVEAL ANIMATIONS
+   ========================= */
+
+.reveal{
+  opacity: 0;
+  transform: translate3d(0, 18px, 0) scale(0.985);
+  filter: blur(6px);
+  transition:
+    opacity 700ms ease,
+    transform 700ms cubic-bezier(.2,.9,.2,1),
+    filter 700ms ease;
+  will-change: opacity, transform, filter;
+}
+
+.reveal.in-view{
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+  filter: blur(0);
+}
+
+/* nicer stagger for children inside a section */
+.reveal-stagger > *{
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  transition:
+    opacity 650ms ease,
+    transform 650ms cubic-bezier(.2,.9,.2,1);
+  will-change: opacity, transform;
+}
+
+.reveal-stagger.in-view > *{
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* stagger timing */
+.reveal-stagger.in-view > *:nth-child(1){ transition-delay: 0ms; }
+.reveal-stagger.in-view > *:nth-child(2){ transition-delay: 90ms; }
+.reveal-stagger.in-view > *:nth-child(3){ transition-delay: 180ms; }
+.reveal-stagger.in-view > *:nth-child(4){ transition-delay: 270ms; }
+.reveal-stagger.in-view > *:nth-child(5){ transition-delay: 360ms; }
+.reveal-stagger.in-view > *:nth-child(6){ transition-delay: 450ms; }
+.reveal-stagger.in-view > *:nth-child(7){ transition-delay: 540ms; }
+.reveal-stagger.in-view > *:nth-child(8){ transition-delay: 630ms; }
+
+/* reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .reveal,
+  .reveal-stagger > *{
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+  }
+}
+/* =========================
+   LIVE MOTION BACKGROUND
+   (Aurora + Floating Particles)
+   ========================= */
+
+/* Make sure your existing .motion-bg stays fixed behind everything */
+.motion-bg{
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* A subtle animated aurora wash */
+.motion-bg::before{
+  content:"";
+  position:absolute;
+  inset:-20%;
+  background:
+    radial-gradient(60% 50% at 20% 30%, rgba(var(--motion-primary), 0.22), transparent 60%),
+    radial-gradient(55% 45% at 75% 25%, rgba(var(--motion-accent), 0.16), transparent 60%),
+    radial-gradient(60% 55% at 55% 75%, rgba(var(--motion-secondary), 0.10), transparent 65%);
+  filter: blur(28px) saturate(1.2);
+  animation: aurora-drift 14s ease-in-out infinite alternate;
+  transform: translate3d(0,0,0);
+}
+
+@keyframes aurora-drift{
+  0%   { transform: translate3d(-2%, -1%, 0) scale(1.03); }
+  50%  { transform: translate3d(2%,  1%, 0) scale(1.06); }
+  100% { transform: translate3d(-1%, 2%, 0) scale(1.04); }
+}
+
+/* Grain (if you don’t already have it) */
+.motion-bg::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  opacity: .10;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+  transform: translateZ(0);
+}
+
+/* Container for particles */
+.motion-particles{
+  position:absolute;
+  inset:0;
+}
+
+/* Each particle */
+.motion-particles i{
+  position:absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(var(--motion-secondary), 0.18);
+  box-shadow:
+    0 0 18px rgba(var(--motion-primary), 0.22),
+    0 0 28px rgba(var(--motion-accent), 0.12);
+  filter: blur(0.2px);
+  transform: translate3d(0,0,0);
+  animation: floaty var(--dur) ease-in-out infinite;
+  opacity: var(--op);
+}
+
+/* Gentle float animation */
+@keyframes floaty{
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(var(--dx), calc(var(--dy) * -1), 0) scale(1.25); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .motion-bg::before,
+  .motion-particles i{
+    animation: none !important;
+  }
+}

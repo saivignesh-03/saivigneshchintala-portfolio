@@ -182,3 +182,104 @@ if (gridAll) {
     }
   });
 })();
+/* =========================
+   SCROLL REVEAL (IntersectionObserver)
+   ========================= */
+(function setupScrollReveal(){
+  const reduceMotion =
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (reduceMotion) return;
+
+  // What should animate:
+  // - each section
+  // - each card
+  // - grid wrappers (to stagger children)
+  const targets = [
+    ...document.querySelectorAll(".section"),
+    ...document.querySelectorAll(".card"),
+    ...document.querySelectorAll(".contact-card"),
+    ...document.querySelectorAll(".profile-card"),
+    ...document.querySelectorAll(".grid-2"),
+  ];
+
+  // Add base classes
+  targets.forEach(el => {
+    // Grids animate children with stagger
+    if (el.classList.contains("grid-2")) {
+      el.classList.add("reveal-stagger");
+    } else {
+      el.classList.add("reveal");
+    }
+  });
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+  entry.target.classList.add("in-view");
+} else {
+  entry.target.classList.remove("in-view");
+}
+
+    });
+  }, {
+    threshold: 0.12,
+    rootMargin: "0px 0px -10% 0px"
+  });
+
+  targets.forEach(el => io.observe(el));
+})();
+/* =========================
+   LIVE BACKGROUND PARTICLES
+   ========================= */
+(function motionParticles(){
+  const reduceMotion =
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (reduceMotion) return;
+
+  const host = document.querySelector(".motion-particles");
+  if (!host) return;
+
+  // avoid duplicating if hot reloaded or re-run
+  if (host.dataset.ready === "1") return;
+  host.dataset.ready = "1";
+
+  const COUNT = 28; // bump to 40 if you want more (28 is smooth)
+
+  for (let i = 0; i < COUNT; i++) {
+    const dot = document.createElement("i");
+
+    // random position
+    const left = Math.random() * 100;
+    const top = Math.random() * 100;
+
+    // random float amounts
+    const dx = (Math.random() * 120 - 60).toFixed(0) + "px";
+    const dy = (Math.random() * 140 - 70).toFixed(0) + "px";
+
+    // random duration + opacity + size
+    const dur = (9 + Math.random() * 10).toFixed(2) + "s";
+    const op = (0.08 + Math.random() * 0.22).toFixed(2);
+    const size = (4 + Math.random() * 7).toFixed(0) + "px";
+
+    dot.style.left = left + "%";
+    dot.style.top = top + "%";
+    dot.style.setProperty("--dx", dx);
+    dot.style.setProperty("--dy", dy);
+    dot.style.setProperty("--dur", dur);
+    dot.style.setProperty("--op", op);
+    dot.style.width = size;
+    dot.style.height = size;
+
+    // slight color variation (green/orange/white)
+    const pick = Math.random();
+    if (pick < 0.33) dot.style.background = "rgba(var(--motion-primary), 0.18)";
+    else if (pick < 0.66) dot.style.background = "rgba(var(--motion-accent), 0.14)";
+    else dot.style.background = "rgba(var(--motion-secondary), 0.14)";
+
+    host.appendChild(dot);
+  }
+})();
