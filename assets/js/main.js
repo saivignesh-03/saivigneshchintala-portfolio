@@ -1,3 +1,116 @@
+/* =========================
+   VISITOR WELCOME DIALOG + TRACKING
+   ========================= */
+(function visitorDialog() {
+
+  // ── PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE ──────────────────────
+  var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxPVBLxNTwtnsP52xDU_roAX6RFKdcEkVwX06qbiVP-IXJF9HedugoY4BE5O2dshhTH/exec";
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // Show once per browser session (clears on tab close)
+  if (sessionStorage.getItem("vd_done")) return;
+
+  /* ── Build dialog HTML ── */
+  var overlay = document.createElement("div");
+  overlay.id = "visitor-dialog-overlay";
+  overlay.setAttribute("role", "dialog");
+  overlay.setAttribute("aria-modal", "true");
+  overlay.setAttribute("aria-labelledby", "vd-title");
+
+  overlay.innerHTML = [
+    '<div class="vd-card">',
+    '  <span class="vd-emoji" aria-hidden="true">👋</span>',
+    '  <h2 class="vd-title" id="vd-title">Welcome to my Portfolio!</h2>',
+    '  <p class="vd-sub">Hi there — glad you stopped by.</p>',
+    '  <p class="vd-question">Are you visiting as a&nbsp;Recruiter?</p>',
+    '  <div class="vd-btns">',
+    '    <button class="vd-btn vd-btn-recruiter" id="vd-yes" autofocus>',
+    '      <span class="vd-btn-icon" aria-hidden="true">💼</span>',
+    '      Yes, I\'m a Recruiter',
+    '    </button>',
+    '    <button class="vd-btn vd-btn-other" id="vd-no">',
+    '      <span class="vd-btn-icon" aria-hidden="true">🚀</span>',
+    '      Just Browsing',
+    '    </button>',
+    '  </div>',
+    '  <p class="vd-note">Your choice helps me understand who visits — no personal data collected.</p>',
+    '</div>'
+  ].join("\n");
+
+  document.body.appendChild(overlay);
+  document.body.style.overflow = "hidden"; // lock scroll
+
+  /* ── Close + send ── */
+  function done(type) {
+    sessionStorage.setItem("vd_done", type);
+    document.body.style.overflow = "";
+
+    // Show quick thank-you before closing
+    var card = overlay.querySelector(".vd-card");
+    var icon = type === "recruiter" ? "🎉" : "😊";
+    var msg  = type === "recruiter"
+      ? "Thanks! Hope you find what you're looking for."
+      : "Enjoy browsing!";
+    card.innerHTML = [
+      '<span class="vd-emoji vd-thanks" aria-hidden="true">' + icon + '</span>',
+      '<p class="vd-title vd-thanks">' + msg + '</p>'
+    ].join("\n");
+
+    // Send data to Google Sheets (fire-and-forget)
+    sendToSheet(type);
+
+    // Fade out after 1.1 s
+    setTimeout(function () {
+      overlay.classList.add("vd-exit");
+      setTimeout(function () { overlay.remove(); }, 400);
+    }, 1100);
+  }
+
+  document.getElementById("vd-yes").addEventListener("click", function () { done("recruiter"); });
+  document.getElementById("vd-no").addEventListener("click",  function () { done("non-recruiter"); });
+
+  // ESC key → treat as "just browsing"
+  document.addEventListener("keydown", function escHandler(e) {
+    if (e.key === "Escape") { done("non-recruiter"); document.removeEventListener("keydown", escHandler); }
+  });
+
+  /* ── Send to Google Apps Script ── */
+  function sendToSheet(type) {
+    if (!SCRIPT_URL || SCRIPT_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") return;
+
+    try {
+      var now = new Date();
+
+      var date = now.getFullYear() + "-"
+        + String(now.getMonth() + 1).padStart(2, "0") + "-"
+        + String(now.getDate()).padStart(2, "0");
+
+      var time = String(now.getHours()).padStart(2, "0") + ":"
+        + String(now.getMinutes()).padStart(2, "0") + ":"
+        + String(now.getSeconds()).padStart(2, "0");
+
+      var timezone = (typeof Intl !== "undefined" && Intl.DateTimeFormat)
+        ? Intl.DateTimeFormat().resolvedOptions().timeZone
+        : "Unknown";
+
+      var body = new URLSearchParams({
+        type: type,
+        date: date,
+        time: time,
+        timezone: timezone
+      });
+
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",         // avoids CORS preflight; response is opaque (that's fine)
+        body: body
+      }).catch(function () {});  // silent fail — never break the portfolio
+
+    } catch (err) { /* silent */ }
+  }
+
+})();
+
 // ======== EDIT THESE LINKS (important) ========
 // Replace project "link" values with your real GitHub repo links.
 // Replace LinkedIn/GitHub links in index.html too.
